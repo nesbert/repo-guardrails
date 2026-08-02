@@ -1,0 +1,1 @@
+npx --no -- repo-guardrails commitlint --edit "$1"

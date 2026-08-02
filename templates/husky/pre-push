@@ -1,0 +1,11 @@
+while read -r local_ref local_sha remote_ref remote_sha
+do
+  case "$remote_ref" in
+    refs/heads/*)
+      branch_name=${remote_ref#refs/heads/}
+      if [ "$local_sha" != "0000000000000000000000000000000000000000" ]; then
+        npx --no -- repo-guardrails branchlint "$branch_name" || exit 1
+      fi
+      ;;
+  esac
+done

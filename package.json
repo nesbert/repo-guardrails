@@ -1,0 +1,52 @@
+{
+  "name": "repo-guardrails",
+  "version": "0.1.0",
+  "description": "Reusable Conventional Commit and branch-name guardrails for Node.js repositories.",
+  "type": "module",
+  "bin": {
+    "repo-guardrails": "bin/repo-guardrails.mjs"
+  },
+  "exports": {
+    ".": "./src/branchlint.mjs",
+    "./commitlint": "./commitlint.config.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/",
+    "commitlint.config.mjs",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "branchlint": "node bin/repo-guardrails.mjs branchlint",
+    "commitlint": "node bin/repo-guardrails.mjs commitlint",
+    "prepare": "husky",
+    "test": "node --test",
+    "test:branchlint": "node --test test/branchlint.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "commitlint",
+    "conventional-commits",
+    "git-hooks",
+    "github-actions",
+    "husky"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srejames/repo-guardrails.git"
+  },
+  "bugs": {
+    "url": "https://github.com/srejames/repo-guardrails/issues"
+  },
+  "homepage": "https://github.com/srejames/repo-guardrails#readme",
+  "dependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "husky": "^9.1.7"
+  }
+}
