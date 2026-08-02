@@ -1,0 +1,15 @@
+{
+  "valid": [
+    "feat/42-add-search",
+    "fix/session-expiration",
+    "docs/git-workflow",
+    "test/7-cover-invalid-requests",
+    "refactor/activity-service",
+    "perf/21-reduce-dashboard-load-time",
+    "build/update-vite",
+    "ci/12-enforce-branch-names",
+    "chore/remove-temporary-files"
+  ],
+  "exempt": ["main", "codex/dashboard-concept-4", "dependabot/npm_and_yarn/vite-7.0.0"],
+  "invalid": ["", "feature/new-ui", "feat/New_UI", "feat/42", "feat/add search", "person/search-form", "docs//git-workflow", "release/1.0.0"]
+}

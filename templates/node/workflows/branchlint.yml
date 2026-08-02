@@ -1,7 +1,6 @@
 name: Branch name
 
-on:
-  pull_request:
+on: [push, pull_request]
 
 permissions:
   contents: read
@@ -17,7 +16,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Validate pull request branch
+      - name: Validate pushed or pull request branch
         env:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: npx --no -- repo-guardrails branchlint "$BRANCH_NAME"

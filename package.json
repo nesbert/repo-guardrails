@@ -1,17 +1,18 @@
 {
   "name": "repo-guardrails",
   "version": "0.1.0",
-  "description": "Reusable Conventional Commit and branch-name guardrails for Node.js repositories.",
+  "description": "Reusable Conventional Commit and branch-name guardrails for Node.js and shell-based repositories.",
   "type": "module",
   "bin": {
     "repo-guardrails": "bin/repo-guardrails.mjs"
   },
   "exports": {
-    ".": "./src/branchlint.mjs",
+    ".": "./src/node/branchlint.mjs",
     "./commitlint": "./commitlint.config.mjs"
   },
   "files": [
     "bin/",
+    "policy/",
     "src/",
     "templates/",
     "commitlint.config.mjs",
@@ -23,7 +24,8 @@
     "commitlint": "node bin/repo-guardrails.mjs commitlint",
     "prepare": "husky",
     "test": "node --test",
-    "test:branchlint": "node --test test/branchlint.test.mjs"
+    "test:node": "node --test test/node/*.test.mjs",
+    "test:shell": "node --test test/shell/*.test.mjs"
   },
   "engines": {
     "node": ">=20"

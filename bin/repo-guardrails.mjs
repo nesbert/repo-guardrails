@@ -5,7 +5,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, copyFileSync } from
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getCurrentBranchName, validateBranchName } from "../src/branchlint.mjs";
+import { getCurrentBranchName, validateBranchName } from "../src/node/branchlint.mjs";
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const command = process.argv[2];
@@ -73,11 +73,11 @@ function init() {
 
   const created = [];
   const skipped = [];
-  ensureFile("commitlint.config.mjs", "commitlint.config.mjs", created, skipped);
-  ensureFile(".husky/commit-msg", "husky/commit-msg", created, skipped);
-  ensureFile(".husky/pre-push", "husky/pre-push", created, skipped);
-  ensureFile(".github/workflows/commitlint.yml", "workflows/commitlint.yml", created, skipped);
-  ensureFile(".github/workflows/branchlint.yml", "workflows/branchlint.yml", created, skipped);
+  ensureFile("commitlint.config.mjs", "node/commitlint.config.mjs", created, skipped);
+  ensureFile(".husky/commit-msg", "node/husky/commit-msg", created, skipped);
+  ensureFile(".husky/pre-push", "node/husky/pre-push", created, skipped);
+  ensureFile(".github/workflows/commitlint.yml", "node/workflows/commitlint.yml", created, skipped);
+  ensureFile(".github/workflows/branchlint.yml", "node/workflows/branchlint.yml", created, skipped);
 
   const husky = spawnSync("npx", ["--no", "--", "husky"], { stdio: "inherit" });
   console.log("\nrepo-guardrails initialization complete.");

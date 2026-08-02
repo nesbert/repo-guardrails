@@ -1,12 +1,21 @@
 # repo-guardrails
 
-`repo-guardrails` gives Node.js repositories consistent Git contribution rules: Conventional Commit messages, predictable branch names, local Husky hooks, matching GitHub Actions checks, and documented `main` branch protection.
+`repo-guardrails` gives Node.js and shell-based repositories consistent Git contribution rules: Conventional Commit messages, predictable branch names, local hooks, matching GitHub Actions checks, and documented `main` branch protection.
 
 It is designed to provide fast local feedback while making GitHub the authority for merging. Local hooks can be bypassed and are not a security boundary. A failed GitHub check blocks merging only when that exact check is required by an active ruleset.
 
 Use it when you want contributors to follow the same commit and branch conventions locally and in pull requests without rebuilding the tooling in every repository.
 
-## Set up a repository
+## Choose an adapter
+
+- **Node.js repositories:** use the npm installation and Husky setup below.
+- **Shell-based repositories:** clone a tagged release of this repository and run `bin/repo-guardrails.sh init` from the target repository. It copies dependency-free Bash validators, repository-owned hooks, and GitHub workflow templates. It does not require Node.js or npm in the target repository.
+
+Both adapters enforce the same branch-name policy. The shell adapter validates Conventional Commit subjects with the built-in types documented below.
+
+See [the architecture](docs/architecture.md) for the adapter approach.
+
+## Set up a Node repository
 
 Follow these steps in order.
 
@@ -35,13 +44,21 @@ commitlint.config.mjs
 
 Existing files and differing scripts are reported and preserved, never silently replaced. Review all generated changes before committing them.
 
-### 3. Push the workflows and open a pull request
+## Set up a shell repository
 
-Commit the generated files and package changes on a conventionally named branch, push it, and open a pull request into `main`. This first pull request registers the `Commitlint` and `Branchlint` checks with GitHub.
+You need Git, Bash, a checkout of a tagged Repo Guardrails release, and repository administration access to configure GitHub rules. From the target repository root:
+
+```bash
+/path/to/repo-guardrails/bin/repo-guardrails.sh init
+```
+
+This creates `.repo-guardrails/`, `.githooks/`, and matching GitHub workflows. It does not require Node.js or npm. Review generated files before committing them.
+
+## Protect `main`
+
+Commit the generated files, plus package changes for Node repositories, on a conventionally named branch. Push it and open a pull request into `main`. This first pull request registers the `Commitlint` and `Branchlint` checks with GitHub.
 
 Wait for both checks to finish. Fix any failure before configuring the ruleset.
-
-### 4. Protect `main`
 
 The package cannot change repository rules without administration permission:
 
@@ -54,8 +71,6 @@ The package cannot change repository rules without administration permission:
 7. Review imported check names, integration identifiers, default branch, merge methods, and repository-specific settings.
 
 Select checks whose source is **GitHub Actions**. Do not choose the generic **Any source** entry. If `Branchlint` is not listed with GitHub Actions as its source, return to the previous step and let it run on a pull request first.
-
-### 5. Verify the protection
 
 Confirm both checks are required in the active ruleset. Test with a pull request from an invalid branch such as `feature/invalid-name` or with a commit such as `bad message`. The appropriate check should fail and GitHub should prevent merging.
 
@@ -107,15 +122,15 @@ docs/git-workflow
 
 ## How enforcement works
 
-- `.husky/commit-msg` checks each commit locally.
-- `.husky/pre-push` checks every pushed branch.
-- `commitlint.yml` checks pull-request commits and commits pushed to `main`.
-- `branchlint.yml` checks every pull request's source branch.
+- Node uses `.husky/commit-msg` and `.husky/pre-push`.
+- Shell uses `.githooks/commit-msg` and `.githooks/pre-push`.
+- `commitlint.yml` checks commits on every push and pull request.
+- `branchlint.yml` checks the branch on every push and pull request.
 - The GitHub ruleset makes the remote checks authoritative for merging.
 
 Each repository must contain workflow YAML because GitHub reads workflows before npm installs dependencies; it cannot discover workflows inside `node_modules`. Small copied workflows are easy to inspect, but template updates must be applied manually.
 
-## Update, configure, or remove
+## Update, configure, or remove a Node repository
 
 ```bash
 npm install --save-dev repo-guardrails@latest
