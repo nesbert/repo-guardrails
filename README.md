@@ -19,7 +19,7 @@ The package cannot configure repository rules without administration permission.
 7. Review imported check names, integration identifiers, default branch, merge methods, and repository-specific settings.
 8. Test protection with an invalid branch such as `feature/invalid-name` or a commit such as `bad message`.
 
-If a check is not selectable, run its workflow on a pull request first. A green workflow alone does not protect `main`; confirm both checks are required in the active ruleset.
+If `Branchlint` is not listed with **GitHub Actions** as its source, open a pull request and let the workflow run once, then return to the ruleset. Do not choose the generic **Any source** entry: waiting for the Actions-sourced check ensures only this repository's workflow satisfies the rule. A green workflow alone does not protect `main`; confirm both checks are required in the active ruleset.
 
 ## Install and initialize
 
