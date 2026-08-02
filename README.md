@@ -1,29 +1,22 @@
 # repo-guardrails
 
-`repo-guardrails` adds consistent Git contribution rules to Node.js repositories: Conventional Commit messages, predictable branch names, local Husky hooks, and matching GitHub Actions checks.
+`repo-guardrails` gives Node.js repositories consistent Git contribution rules: Conventional Commit messages, predictable branch names, local Husky hooks, matching GitHub Actions checks, and documented `main` branch protection.
 
-Local hooks give fast feedback but can be bypassed, so they are not a security boundary. GitHub Actions provide shared validation, and failed checks block merging only when `Commitlint` and `Branchlint` are required by a GitHub ruleset.
+It is designed to provide fast local feedback while making GitHub the authority for merging. Local hooks can be bypassed and are not a security boundary. A failed GitHub check blocks merging only when that exact check is required by an active ruleset.
 
-Requirements: Git, Node.js 20 or newer, an npm project with a committed lockfile, and repository administration access to configure GitHub rules.
+Use it when you want contributors to follow the same commit and branch conventions locally and in pull requests without rebuilding the tooling in every repository.
 
-## Protect `main` on GitHub
+## Set up a repository
 
-The package cannot configure repository rules without administration permission. After installing it:
+Follow these steps in order.
 
-1. Commit and push the generated workflows, then open a pull request so both checks run once.
-2. Open **Settings → Rules → Rulesets**.
-3. Create a branch ruleset targeting the default branch, or import [`templates/main-ruleset.json`](templates/main-ruleset.json).
-4. Require pull requests, at least one approval, and resolved conversations when appropriate.
-5. Block force pushes and branch deletion.
-6. Require the exact status checks `Commitlint` and `Branchlint`, with branches up to date before merging.
-7. Review imported check names, integration identifiers, default branch, merge methods, and repository-specific settings.
-8. Test protection with an invalid branch such as `feature/invalid-name` or a commit such as `bad message`.
+### 1. Check the requirements
 
-If `Branchlint` is not listed with **GitHub Actions** as its source, open a pull request and let the workflow run once, then return to the ruleset. Do not choose the generic **Any source** entry: waiting for the Actions-sourced check ensures only this repository's workflow satisfies the rule. A green workflow alone does not protect `main`; confirm both checks are required in the active ruleset.
+You need Git, Node.js 20 or newer, an npm project with a committed lockfile, and repository administration access to configure GitHub rules.
 
-## Install and initialize
+### 2. Install and initialize
 
-From an npm and Git repository root:
+From the npm and Git repository root:
 
 ```bash
 npm install --save-dev repo-guardrails
@@ -40,9 +33,33 @@ commitlint.config.mjs
 .github/workflows/branchlint.yml
 ```
 
-Existing files and differing scripts are preserved and reported, never silently replaced. Commit the generated files and package changes.
+Existing files and differing scripts are reported and preserved, never silently replaced. Review all generated changes before committing them.
 
-Run checks manually with:
+### 3. Push the workflows and open a pull request
+
+Commit the generated files and package changes on a conventionally named branch, push it, and open a pull request into `main`. This first pull request registers the `Commitlint` and `Branchlint` checks with GitHub.
+
+Wait for both checks to finish. Fix any failure before configuring the ruleset.
+
+### 4. Protect `main`
+
+The package cannot change repository rules without administration permission:
+
+1. Open **Settings → Rules → Rulesets**.
+2. Create a branch ruleset targeting the default branch, or import [`templates/main-ruleset.json`](templates/main-ruleset.json).
+3. Require pull requests, at least one approval, and resolved conversations when appropriate.
+4. Block force pushes and branch deletion.
+5. Require branches to be up to date before merging.
+6. Require the exact `Commitlint` and `Branchlint` status checks.
+7. Review imported check names, integration identifiers, default branch, merge methods, and repository-specific settings.
+
+Select checks whose source is **GitHub Actions**. Do not choose the generic **Any source** entry. If `Branchlint` is not listed with GitHub Actions as its source, return to the previous step and let it run on a pull request first.
+
+### 5. Verify the protection
+
+Confirm both checks are required in the active ruleset. Test with a pull request from an invalid branch such as `feature/invalid-name` or with a commit such as `bad message`. The appropriate check should fail and GitHub should prevent merging.
+
+You can also run the checks manually:
 
 ```bash
 npx repo-guardrails branchlint
@@ -88,7 +105,7 @@ docs/git-workflow
 
 `main`, `codex/*`, and `dependabot/*` are exempt. Names such as `feature/new-ui`, `feat/New_UI`, and `release/1.0.0` are rejected.
 
-## How it works
+## How enforcement works
 
 - `.husky/commit-msg` checks each commit locally.
 - `.husky/pre-push` checks every pushed branch.
@@ -113,7 +130,7 @@ To remove it, run `npm uninstall repo-guardrails`, delete its three scripts and 
 
 - **Hooks do not run:** run `npm install`, then `npm run prepare`, and commit `.husky/`.
 - **`npm ci` fails in Actions:** commit the lockfile produced by the supported package manager and Node version.
-- **Bad changes can merge:** require the exact `Commitlint` and `Branchlint` checks in the active ruleset.
+- **Bad changes can merge:** require the exact GitHub Actions-sourced `Commitlint` and `Branchlint` checks.
 - **`init` skipped a file:** compare it with the matching packaged template and merge intentionally.
 - **Detached HEAD:** pass the branch explicitly: `repo-guardrails branchlint <name>`.
 
